@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>COS Lab Help Queue</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="../css/bootstrap.min.css" rel="stylesheet" media="screen">
+</head>
+<body>
+<script src="http://code.jquery.com/jquery.js"></script>
+<script src="../js/bootstrap.min.js"></script>
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12">
+            <h1> Welcome to the CS Lab!</h1></div>
+         </div>
+    <div class="row-fluid">
+        <div class="span2">
+            <h2>Alpha Build</h2>
+            <a href="{{ logout_url }}">Logout</a><br>
+            {% if is_ta %}
+                You are a TA!
+            {% endif %}
+        </div>
+        <div class="span10">
+            <h2>Help Queue</h2>
+            <table class="table table-striped">
+                <tr>
+                    <td>Number</td>
+                    <td>Name</td>
+                    <td>Email</td>
+                    {% if is_ta %}
+                        <td>Help Request</td>
+                    {% endif %}
+                    <td>Action</td>
+                </tr>
+                {% for req in help_requests %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ req.name }}</td>
+                        <td>{{ req.netid }}</td>
+                        {% if is_ta %}
+                            <td>{{ req.help_msg }}</td>
+                        {% endif %}
+                        <td>
+                            {% if req.netid == curr_user or is_ta %}
+                                <form class="form-inline" action="/" method="get">
+                                <div class="btn-group">
+                                    {% if is_ta %}
+                                        <button class="btn btn-success" value="help" name="action">
+                                            <i class="icon-ok"></i>
+                                        </button>
+                                    {% endif %}
+                                    <button class="btn btn-danger" value="cancel" name="action">
+                                        <i class="icon-remove"></i>
+                                    </button>
+                                </div>
+                                    <input type="hidden" value="{{ req.netid }}" name="netid">
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    <div class="row-fluid">
+        <div class="span10 offset2">
+            <form class="form-horizontal" method="post">
+                <input type="hidden" value="enter_queue" name="action">
+                <div class="control-group">
+                    <label class="control-label">Name</label>
+
+                    <div class="controls">
+                        <input type="text" placeholder="Name" name="name">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">What do you need help with?</label>
+
+                    <div class="controls">
+                        <textarea rows="5" name="help_msg"></textarea>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls">
+                        <button type="submit" class="btn btn-primary">Enter the Queue</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
