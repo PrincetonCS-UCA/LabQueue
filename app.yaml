@@ -18,6 +18,9 @@ handlers:
 - url: /img
   static_dir: img
 
+- url: /fonts
+  static_dir: fonts
+
 - url: .*
   script: main.app
   login: required

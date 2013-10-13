@@ -9,20 +9,20 @@
 <body>
 <script src="http://code.jquery.com/jquery.js"></script>
 <script src="../js/bootstrap.min.js"></script>
-<div class="container-fluid">
-    <div class="row-fluid">
-        <div class="span12">
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
             <h1> Welcome to the CS Lab!</h1></div>
          </div>
-    <div class="row-fluid">
-        <div class="span2">
+    <div class="row">
+        <div class="col-md-2">
             <h2>Alpha Build</h2>
             <a href="{{ logout_url }}">Logout</a><br>
             {% if is_ta %}
                 You are a TA!
             {% endif %}
         </div>
-        <div class="span10">
+        <div class="col-md-10">
             <h2>Help Queue</h2>
             <table class="table table-striped">
                 <tr>
@@ -48,11 +48,11 @@
                                 <div class="btn-group">
                                     {% if is_ta %}
                                         <button class="btn btn-success" value="help" name="action">
-                                            <i class="icon-ok"></i>
+                                            <i class="glyphicon glyphicon-ok"></i>
                                         </button>
                                     {% endif %}
                                     <button class="btn btn-danger" value="cancel" name="action">
-                                        <i class="icon-remove"></i>
+                                        <i class="glyphicon glyphicon-remove"></i>
                                     </button>
                                 </div>
                                     <input type="hidden" value="{{ req.netid }}" name="netid">
@@ -64,8 +64,32 @@
             </table>
         </div>
     </div>
-    <div class="row-fluid">
-        <div class="span10 offset2">
+
+    <div class="row">
+        <form class="form-horizontal" role="form" method="post">
+            <input type="hidden" value="enter_queue" name="action">
+            <div class="form-group">
+                <label for="name" class="col-lg-2 control-label">Name</label>
+                <div class="col-lg-6">
+                    <input type="text" class="form-control" name="name" placeholder="Name">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="help_msg" class="col-lg-2 control-label">Describe your problem</label>
+                <div class="col-lg-6">
+                    <textarea class="form-control" rows="5" name="help_msg"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-lg-offset-2 col-lg-6">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+<!--
+    <div class="row">
+        <div class="col-md-10 col-md-offset-2">
             <form class="form-horizontal" method="post">
                 <input type="hidden" value="enter_queue" name="action">
                 <div class="control-group">
@@ -90,6 +114,7 @@
             </form>
         </div>
     </div>
+    -->
 </div>
 </body>
 </html>
