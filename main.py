@@ -35,22 +35,6 @@ class HelpQueue(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
 
-        if 'action' in self.request.GET and self.request.GET['action'] == 'help':
-            req_query = HelpRequest.query(HelpRequest.netid == self.request.GET['netid'],
-                                          HelpRequest.been_helped == False)
-            reqs = req_query.fetch(1)
-            for r in reqs:
-                r.been_helped = True
-                r.attending_ta = user.email()
-                r.put()
-        elif 'action' in self.request.GET and self.request.GET['action'] == 'cancel':
-            req_query = HelpRequest.query(HelpRequest.netid == self.request.GET['netid'],
-                                          HelpRequest.canceled == False)
-            reqs = req_query.fetch(1)
-            for r in reqs:
-                r.canceled = True
-                r.put()
-
         help_query = HelpRequest.query(HelpRequest.been_helped == False, HelpRequest.canceled == False,
                                        ancestor=help_queue_key()).order(HelpRequest.request_datetime)
         help_reqs = help_query.fetch()
@@ -65,16 +49,33 @@ class HelpQueue(webapp2.RequestHandler):
     #enforce user login
     def post(self):
         user = users.get_current_user()
-        help_queue = HelpRequest(parent=help_queue_key())
-        help_queue.name = self.request.get('name')
-        help_queue.netid = user.email()
-        help_queue.help_msg = self.request.get('help_msg')
+        if self.request.get('action') == 'help':
+            req_query = HelpRequest.query(HelpRequest.netid == self.request.get('netid'),
+                                          HelpRequest.been_helped == False)
+            reqs = req_query.fetch(1)
+            for r in reqs:
+                r.been_helped = True
+                r.attending_ta = user.email()
+                r.put()
+        elif self.request.get('action') == 'cancel':
+            req_query = HelpRequest.query(HelpRequest.netid == self.request.get('netid'),
+                                          HelpRequest.canceled == False)
+            reqs = req_query.fetch(1)
+            for r in reqs:
+                r.canceled = True
+                r.put()
+        elif self.request.get('action') == 'enter_queue':
+            help_queue = HelpRequest(parent=help_queue_key())
+            help_queue.name = self.request.get('name')
+            help_queue.netid = user.email()
+            help_queue.help_msg = self.request.get('help_msg')
 
-        q = HelpRequest.query(HelpRequest.netid == help_queue.netid,
-                              HelpRequest.been_helped == False,
-                              HelpRequest.canceled == False)
-        if q.count() == 0:
-            help_queue.put()
+            q = HelpRequest.query(HelpRequest.netid == help_queue.netid,
+                                  HelpRequest.been_helped == False,
+                                  HelpRequest.canceled == False)
+            # TODO: Error to user if they try to double enter queue
+            if q.count() == 0:
+                help_queue.put()
         self.redirect('/')
 
 app = webapp2.WSGIApplication([

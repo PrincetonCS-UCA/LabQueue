@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>COS Lab Help Queue</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -44,7 +44,7 @@
                         {% endif %}
                         <td>
                             {% if req.netid == curr_user or is_ta %}
-                                <form class="form-inline" action="/" method="get">
+                                <form class="form-inline" action="/" method="post">
                                 <div class="btn-group">
                                     {% if is_ta %}
                                         <button class="btn btn-success" value="help" name="action">
@@ -87,34 +87,9 @@
             </div>
         </form>
     </div>
-<!--
     <div class="row">
-        <div class="col-md-10 col-md-offset-2">
-            <form class="form-horizontal" method="post">
-                <input type="hidden" value="enter_queue" name="action">
-                <div class="control-group">
-                    <label class="control-label">Name</label>
-
-                    <div class="controls">
-                        <input type="text" placeholder="Name" name="name">
-                    </div>
-                </div>
-                <div class="control-group">
-                    <label class="control-label">What do you need help with?</label>
-
-                    <div class="controls">
-                        <textarea rows="5" name="help_msg"></textarea>
-                    </div>
-                </div>
-                <div class="control-group">
-                    <div class="controls">
-                        <button type="submit" class="btn btn-primary">Enter the Queue</button>
-                    </div>
-                </div>
-            </form>
-        </div>
+        <a href="http://www.github.com/adaifotis/LabTAs">Check out the GitHub project!</a>
     </div>
-    -->
 </div>
 </body>
 </html>
