@@ -1,22 +1,19 @@
 import os
 import logging
-import datetime
+from datetime import datetime, timedelta
 
 import webapp2
 import jinja2
 from google.appengine.api import users
 from google.appengine.ext import ndb
 
+import ConfigDefaults
+
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'])
 
 HELP_QUEUE_NAME = 'default_queue'
-
-LAB_TAS = ['daifotis@princeton.edu', 'alex.daifotis@gmail.com', 'mcspedon@princeton.edu', 'siderius@princeton.edu',
-           'auttamad@princeton.edu', 'gowen@princeton.edu', 'psyu@princeton.edu', 'codyw@princeton.edu', 'eportnoy@princeton.edu',
-           'usikder@princeton.edu', 'knv@princeton.edu', 'aabdelaz@princeton.edu', 'aksimpso@princeton.edu',
-           'mmcgil@princeton.edu', 'bspar@princeton.edu']
 
 def help_queue_key(help__queue_name=HELP_QUEUE_NAME):
     return ndb.Key('HelpQueue', help__queue_name)
@@ -40,7 +37,7 @@ class HelpQueue(webapp2.RequestHandler):
         help_reqs = help_query.fetch()
         template_values = {'help_requests': help_reqs,
                            'logout_url': users.create_logout_url('/'),
-                           'is_ta': user.email() in LAB_TAS,
+                           'is_ta': user.email() in ConfigDefaults.TA_EMAILS,
                            'curr_user': user.email()}
         template = JINJA_ENVIRONMENT.get_template('templates/HelpQueue.html')
 
