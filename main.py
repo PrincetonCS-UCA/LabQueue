@@ -26,6 +26,11 @@ class HelpRequest(ndb.Model):
     canceled = ndb.BooleanProperty(default=False)
     request_datetime = ndb.DateTimeProperty(auto_now_add=True)
     attending_ta = ndb.StringProperty()
+    helped_datetime = ndb.DateTimeProperty()
+
+    @property
+    def wait_time(self):
+        return None if self.helped_datetime is None else (self.helped_datetime - self.request_datetime)
 
 class HelpQueue(webapp2.RequestHandler):
     # enforce user login
@@ -53,6 +58,7 @@ class HelpQueue(webapp2.RequestHandler):
             for r in reqs:
                 r.been_helped = True
                 r.attending_ta = user.email()
+                r.helped_datetime = datetime.now()
                 r.put()
         elif self.request.get('action') == 'cancel':
             req_query = HelpRequest.query(HelpRequest.netid == self.request.get('netid'),
