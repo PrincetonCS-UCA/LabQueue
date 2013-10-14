@@ -27,6 +27,7 @@ class HelpRequest(ndb.Model):
     request_datetime = ndb.DateTimeProperty(auto_now_add=True)
     attending_ta = ndb.StringProperty()
     helped_datetime = ndb.DateTimeProperty()
+    course = ndb.StringProperty()
 
     @property
     def wait_time(self):
@@ -72,6 +73,7 @@ class HelpQueue(webapp2.RequestHandler):
             help_queue.name = self.request.get('name')
             help_queue.netid = user.email()
             help_queue.help_msg = self.request.get('help_msg')
+            help_queue.course = self.request.get('course')
 
             q = HelpRequest.query(HelpRequest.netid == help_queue.netid,
                                   HelpRequest.been_helped == False,
