@@ -1,5 +1,5 @@
 application: golden-cove-356
-version: 2
+version: 3
 runtime: python27
 api_version: 1
 threadsafe: yes
@@ -21,7 +21,10 @@ handlers:
 - url: /fonts
   static_dir: fonts
 
-- url: .*
+- url: /_ah/channel/.*
+  script: main.app
+
+- url: /.*
   script: main.app
   login: required
 
@@ -30,3 +33,6 @@ libraries:
   version: latest
 - name: jinja2
   version: latest
+
+inbound_services:
+- channel_presence

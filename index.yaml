@@ -31,3 +31,24 @@ indexes:
   - name: canceled
   - name: request_datetime
     direction: desc
+
+- kind: HelpRequest
+  ancestor: yes
+  properties:
+  - name: been_helped
+  - name: canceled
+  - name: request_datetime
+    direction: desc
+  - name: course
+  - name: help_msg
+  - name: name
+  - name: netid
+
+- kind: HelpRequest
+  ancestor: yes
+  properties:
+  - name: been_helped
+  - name: canceled
+  - name: request_datetime
+    direction: desc
+  - name: name

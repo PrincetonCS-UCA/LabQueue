@@ -1,14 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
-    <title>COS Lab Help Queue</title>
+    <title>COS Help Queue</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap -->
     <link href="../css/bootstrap.min.css" rel="stylesheet" media="screen">
 </head>
 <body>
+<!-- MAKE SURE THIS JS GOES FIRST, IT SETS IMPORTANT GLOBALS -->
+<script type="text/javascript">
+    // set globals
+    curr_user = '{{ curr_user }}'
+    token = '{{ token }}'
+    if ('{{ is_ta }}' == 'True') is_ta = true;
+    else                         is_ta = false;
+    initial_queue = '{{ queue }}'
+</script>
+<!-- NOW THE REST OF THE JS -->
 <script src="http://code.jquery.com/jquery.js"></script>
 <script src="../js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/_ah/channel/jsapi"></script>
+<script type="text/javascript" src="/js/labtas-3.0.js"></script>
+
+
 <div class="container">
     <div class="row">
         <div class="col-md-12">
@@ -24,52 +38,24 @@
         </div>
         <div class="col-md-10">
             <h2>Help Queue</h2>
-            <table class="table table-striped">
-                <tr>
-                    <td>Number</td>
-                    <td>Name</td>
-                    <td>Email</td>
+            <table id="table-queue" class="table table-striped">
+                <tr id="table-header">
+                    <td class="hr-number">Number</td>
+                    <td class="hr-name">Name</td>
+                    <td class="hr-email">Email</td>
                     {% if is_ta %}
-                        <td>Course</td>
-                        <td>Help Request</td>
+                        <td class="hr-course">Course</td>
+                        <td class="hr-msg">Help Request</td>
                     {% endif %}
-                    <td>Action</td>
+                    <td class="hr-action">Action</td>
                 </tr>
-                {% for req in help_requests %}
-                    <tr>
-                        <td>{{ loop.index }}</td>
-                        <td>{{ req.name }}</td>
-                        <td>{{ req.netid }}</td>
-                        {% if is_ta %}
-                            <td>{{ req.course }}</td>
-                            <td>{{ req.help_msg }}</td>
-                        {% endif %}
-                        <td>
-                            {% if req.netid == curr_user or is_ta %}
-                                <form class="form-inline" action="/" method="post">
-                                <div class="btn-group">
-                                    {% if is_ta %}
-                                        <button class="btn btn-success" value="help" name="action">
-                                            <i class="glyphicon glyphicon-ok"></i>
-                                        </button>
-                                    {% endif %}
-                                    <button class="btn btn-danger" value="cancel" name="action">
-                                        <i class="glyphicon glyphicon-remove"></i>
-                                    </button>
-                                </div>
-                                    <input type="hidden" value="{{ req.netid }}" name="netid">
-                                </form>
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
+                <!-- JS WILL INSERT ROWS BELOW -->
             </table>
         </div>
     </div>
 
     <div class="row">
-        <form class="form-horizontal" role="form" method="post">
-            <input type="hidden" value="enter_queue" name="action">
+        <form class="form-horizontal" role="form" id="form-submit">
             <div class="form-group">
                 <label for="name" class="col-lg-2 control-label">Name</label>
                 <div class="col-lg-6">
@@ -105,5 +91,17 @@
         Questions? Feedback? Email the Head TA Alex Daifotis -- daifotis at princeton dot edu
     </div>
 </div>
+
+<div id="queue-btn-template" class="btn-group hidden">
+    {% if is_ta %}
+        <button class="btn btn-success close-req" value="help" name="action">
+            <i class="glyphicon glyphicon-ok"></i>
+        </button>
+    {% endif %}
+    <button class="btn btn-danger cancel-req" value="cancel" name="action">
+        <i class="glyphicon glyphicon-remove"></i>
+    </button>
+</div>
+
 </body>
 </html>
