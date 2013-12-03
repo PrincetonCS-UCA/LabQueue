@@ -36,8 +36,8 @@ app = webapp2.WSGIApplication([
     ('/mark-helped', QueueManager.MarkAsHelped),
     ('/cancel', QueueManager.CancelFromQueue),
     ('/_ah/channel/connected/', ChannelManager.SubscriberConnect),
-    ('/_ah/channel/disconnected/', ChannelManager.SubscriberDisconnect),
-    ('/_update-schema', LabTAUtils.InQueueSchemaUpdate)
+    ('/_ah/channel/disconnected/', ChannelManager.SubscriberDisconnect)
+   # ('/_update-schema', LabTAUtils.InQueueSchemaUpdate)
 ], debug=True)
 
 
