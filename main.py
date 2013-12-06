@@ -11,6 +11,7 @@ import QueueManager, ChannelManager
 
 import ConfigDefaults
 import LabTAUtils
+from LabTA import is_ta
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
@@ -21,8 +22,10 @@ class MainPage(webapp2.RequestHandler):
         user = users.get_current_user()
         json_queue = QueueManager.get_json_queue()
         token = channel.create_channel(user.email())
+        if is_ta(user.email()):
+            logging.info("{} is a TA".format(user.email()))
         template_values = {'logout_url': users.create_logout_url('/'),
-                           'is_ta': user.email() in ConfigDefaults.TA_EMAILS,
+                           'is_ta': is_ta(user.email()),
                            'curr_user': user.email(),
                            'token': token,
                            'queue': json_queue}
@@ -36,7 +39,8 @@ app = webapp2.WSGIApplication([
     ('/mark-helped', QueueManager.MarkAsHelped),
     ('/cancel', QueueManager.CancelFromQueue),
     ('/_ah/channel/connected/', ChannelManager.SubscriberConnect),
-    ('/_ah/channel/disconnected/', ChannelManager.SubscriberDisconnect)
+    ('/_ah/channel/disconnected/', ChannelManager.SubscriberDisconnect),
+    ('/_update-tas', LabTAUtils.SetTAsInNDB)
    # ('/_update-schema', LabTAUtils.InQueueSchemaUpdate)
 ], debug=True)
 
