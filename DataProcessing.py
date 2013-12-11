@@ -6,8 +6,7 @@ import numpy
 
 
 def auth_func():
-    return ('alex.daifotis@gmail.com', 'oldnassau4')
-    #return (raw_input('Email:'), getpass.getpass('Password:'))
+    return (raw_input('Email:'), getpass.getpass('Password:'))
 
 remote_api_stub.ConfigureRemoteApi(None, '/_ah/remote_api', auth_func,
                                     'golden-cove-356.appspot.com')
