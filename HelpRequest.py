@@ -8,7 +8,7 @@ def help_queue_key(help__queue_name=HELP_QUEUE_NAME):
 class HelpRequest(ndb.Model):
     name = ndb.StringProperty()
     netid = ndb.StringProperty()
-    help_msg = ndb.StringProperty()
+    help_msg = ndb.TextProperty()
     been_helped = ndb.BooleanProperty(default=False)
     canceled = ndb.BooleanProperty(default=False)
     in_queue = ndb.ComputedProperty(lambda self: (not self.been_helped and not self.canceled))
