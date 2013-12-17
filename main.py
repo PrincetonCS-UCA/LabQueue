@@ -7,7 +7,7 @@ import jinja2
 from google.appengine.api import users, channel
 from google.appengine.ext import ndb
 
-import QueueManager, ChannelManager
+import QueueManager, ChannelManager, LabTA
 
 import ConfigDefaults
 import LabTAUtils
@@ -38,6 +38,7 @@ app = webapp2.WSGIApplication([
     ('/add', QueueManager.AddToQueue),
     ('/mark-helped', QueueManager.MarkAsHelped),
     ('/cancel', QueueManager.CancelFromQueue),
+    ('/ta-facebook', LabTA.TAFacebook),
     ('/_ah/channel/connected/', ChannelManager.SubscriberConnect),
     ('/_ah/channel/disconnected/', ChannelManager.SubscriberDisconnect),
     ('/_update-tas', LabTAUtils.SetTAsInNDB)

@@ -40,3 +40,6 @@ nosetests.xml
 
 #Pycharm
 .idea
+
+#Images
+img/

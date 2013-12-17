@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <title>COS Help Queue</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="../css/bootstrap.min.css" rel="stylesheet" media="screen">
+</head>
+<body>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="../js/bootstrap.min.js"></script>
+
+<div class="container">
+    <h1>LabTA Facebook</h1>
+    {% for ta in tas %}
+        {% if loop.index % ROW_LENGTH == 1 %} <!-- beginning of a row -->
+            <div class="row" align="center">
+        {% endif %}
+        <div class="col-md-4">
+            <img src="{{ ta.img_path }}"> <br>
+            {{ ta.first_name }} {{ ta.last_name }}<br>
+            <a href="mailto:{{ ta.email }}">{{ ta.email }}</a><br>
+            {{ ta.class_year }}
+        </div>
+        {% if loop.last or loop.index % ROW_LENGTH == 0 %} <!-- end of a row -->
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>
+
+</body>
+</html>

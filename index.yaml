@@ -52,3 +52,9 @@ indexes:
   - name: request_datetime
     direction: desc
   - name: name
+
+- kind: LabTA
+  ancestor: yes
+  properties:
+  - name: is_active
+  - name: class_year

@@ -3,7 +3,7 @@ import webapp2
 
 from HelpRequest import HelpRequest, help_queue_key
 import logging
-from LabTA import LabTA
+from LabTA import LabTA, labta_key
 
 # DB update function meant to be run once to update the DB such that
 # all entities have the in_queue computed property.
@@ -23,13 +23,12 @@ class InQueueSchemaUpdate(webapp2.RequestHandler):
 # Read off current TAs from text file, adds them to DB
 # if they are not already in it. Do this whenever new
 # TAs are added to the roster
-# TODO: FIX THIS TO SET TAs AS ACTIVE OR INACTIVE
 class SetTAsInNDB(webapp2.RequestHandler):
     def get(self):
         active_tas = dict()
         for line in open('tas.dat', 'r'):
             tmp = line.split(',')
-            ta = LabTA()
+            ta = LabTA(parent=labta_key())
             logging.info(line)
             ta.first_name = tmp[0]
             ta.last_name = tmp[1]
