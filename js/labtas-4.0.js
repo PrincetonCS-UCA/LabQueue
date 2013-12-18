@@ -9,21 +9,33 @@ onOpen = function() {
 }
 
 onMessage = function(m) {
-    console.log("incoming queue");
+    console.log("incoming message");
     // this is a bit of a hack, but for now we'll ignore the
     // race condition and just say that only if the queue grows,
     // there's new people in it
-    var newQueue = JSON.parse(m.data);
-    if (newQueue.length > queue.length && !pageActive)
+    var msg = JSON.parse(m.data);
+    var obj = JSON.parse(msg.data);
+    console.log(msg.type);
+    if (msg.type == "queue")
     {
-        newRequests += newQueue.length - queue.length;
-        if (newRequests == 1)
-            document.title = newRequests + " New Request!";
-        else
-            document.title = newRequests + " New Requests!";
+        var newQueue = obj;
+        if (newQueue.length > queue.length && !pageActive)
+        {
+            newRequests += newQueue.length - queue.length;
+            if (newRequests == 1)
+                document.title = newRequests + " New Request!";
+            else
+                document.title = newRequests + " New Requests!";
+        }
+        queue = newQueue;
+        refreshQueue();
     }
-    queue = newQueue;
-    refreshQueue();
+    else if (msg.type == "request_ack")
+    {
+        params = $.param({'name': obj.name, 'img': obj.img});
+        $('#ack-modal').modal({remote: '/ack-modal?' + params});
+        console.log(obj.img);
+    }
 }
 
 refreshQueue = function() {

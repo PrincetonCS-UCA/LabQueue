@@ -4,6 +4,7 @@ import webapp2
 from google.appengine.api import channel, users
 from google.appengine.ext import ndb
 from HelpRequest import HelpRequest, help_queue_key
+from LabTA import LabTA, labta_key
 import ConfigDefaults
 import json
 import ChannelManager
@@ -49,7 +50,7 @@ class AddToQueue(webapp2.RequestHandler):
         hr.help_msg = self.request.get('help_msg')
         hr.course = self.request.get('course')
         hr.put()
-        ChannelManager.queue_update(hr)
+        ChannelManager.queue_update()
 
 class MarkAsHelped(webapp2.RequestHandler):
     def post(self):
@@ -64,7 +65,9 @@ class MarkAsHelped(webapp2.RequestHandler):
         hr.been_helped = True
         hr.attending_ta = user.email()
         hr.put()
-        ChannelManager.queue_update(hr)
+        ChannelManager.queue_update()
+        ta = LabTA.query(LabTA.email == hr.attending_ta, ancestor=labta_key()).fetch()[0]
+        ChannelManager.notify_request_accepted(hr.netid, ta.first_name, ta.img_path)
 
 class CancelFromQueue(webapp2.RequestHandler):
     def post(self):
@@ -78,4 +81,4 @@ class CancelFromQueue(webapp2.RequestHandler):
         hr = q.get()
         hr.canceled = True
         hr.put()
-        ChannelManager.queue_update(hr)
+        ChannelManager.queue_update()

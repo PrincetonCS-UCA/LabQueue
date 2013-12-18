@@ -42,3 +42,10 @@ class TAFacebook(webapp2.RequestHandler):
         template = JINJA_ENVIRONMENT.get_template('templates/Facebook.html')
         self.response.write(template.render({'tas' : active_tas,
                                              'ROW_LENGTH' : ROW_LENGTH}))
+
+class AcknowledgeModal(webapp2.RequestHandler):
+    def get(self):
+        template = JINJA_ENVIRONMENT.get_template('templates/Acknowledge.html')
+        self.response.write(template.render({'name': self.request.GET['name'],
+                                             'img_path': self.request.GET['img']}))
+

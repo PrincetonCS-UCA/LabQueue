@@ -2,6 +2,7 @@ import logging
 import webapp2
 from google.appengine.api import channel, memcache
 import QueueManager
+import json
 
 SUBSCRIBERS_KEY = 'subscribers'
 
@@ -37,10 +38,15 @@ class SubscriberDisconnect(webapp2.RequestHandler):
         logging.info("disconnect")
         remove_sub(self.request.get('from'))
 
-def queue_update(help_request):
+def queue_update():
     json_queue = QueueManager.get_json_queue()
-    logging.info("sending  notifications")
+    logging.info("sending notifications")
     subs = memcache.get(SUBSCRIBERS_KEY)
+    msg = json.dumps({'type': 'queue', 'data': json_queue})
     for s in subs:
-        channel.send_message(s, json_queue)
+        channel.send_message(s, msg)
 
+def notify_request_accepted(student_email, ta_name, img_path):
+    data = json.dumps({'name': ta_name, 'img': img_path})
+    msg = json.dumps({'type': 'request_ack', 'data': data})
+    channel.send_message(student_email, msg)
