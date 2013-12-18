@@ -39,6 +39,7 @@ app = webapp2.WSGIApplication([
     ('/add', QueueManager.AddToQueue),
     ('/mark-helped', QueueManager.MarkAsHelped),
     ('/cancel', QueueManager.CancelFromQueue),
+    ('/clear-queue', QueueManager.ClearQueue),
     ('/ack-modal', LabTA.AcknowledgeModal),
     ('/ta-facebook', LabTA.TAFacebook),
     ('/_ah/channel/connected/', ChannelManager.SubscriberConnect),

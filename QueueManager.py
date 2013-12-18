@@ -82,3 +82,14 @@ class CancelFromQueue(webapp2.RequestHandler):
         hr.canceled = True
         hr.put()
         ChannelManager.queue_update()
+
+# Currently this is pretty insecure, theoretically any user could just
+# be a dick and hit the URL...
+class ClearQueue(webapp2.RequestHandler):
+    @ndb.toplevel
+    def post(self):
+        q = HelpRequest.query(HelpRequest.in_queue == True, ancestor=help_queue_key()).fetch()
+        for hr in q:
+            hr.canceled = True
+            hr.put()
+        ChannelManager.queue_update()

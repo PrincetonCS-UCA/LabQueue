@@ -78,6 +78,12 @@ cancelRequest = function(e) {
     return false;
 }
 
+clearQueue = function(e) {
+    console.log("clear queue");
+    e.preventDefault();
+    $.post("/clear-queue");
+}
+
 queueError = function() {
     console.log("error occurred");
     alert("Error entering queue! Please try again.");
@@ -136,6 +142,7 @@ $(document).ready(function() {
     $("#table-queue").on("click", ".close-req", handler=closeRequest);
     $("#table-queue").on("click", ".cancel-req", handler=cancelRequest);
     $("#form-submit").on("submit", handler=enterQueue);
+    $("#btn-confirm-clear").on("click", handler=clearQueue);
     $(window).on("blur focus", viewChange);
     console.log(curr_user)
     console.log(is_ta)

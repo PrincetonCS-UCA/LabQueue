@@ -30,7 +30,6 @@
          </div>
     <div class="row">
         <div class="col-md-2">
-            <h2>Beta Build</h2>
             <a href="ta-facebook">TA Facebook</a><br>
             <a href="{{ logout_url }}">Logout</a><br>
             {% if is_ta %}
@@ -87,7 +86,14 @@
             </div>
         </form>
     </div>
+    {% if is_ta %}
     <div class="row">
+        <button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#clear-modal">
+            Clear the Entire Queue
+        </button>
+    </div>
+    <div class="row">
+    {% endif %}
         <a href="http://www.github.com/adaifotis/LabTAs">Check out the GitHub project!</a> <br>
         Questions? Feedback? Email the Head TA Alex Daifotis -- <a href="mailto:daifotis@princeton.edu">
                                                                    daifotis@princeton.edu</a>
@@ -105,7 +111,24 @@
     </button>
 </div>
 
-
+<div class="modal fade" id="clear-modal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                Queue Management
+                <button type="button" class="close" data-dismiss="modal">&times</button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to clear the entire queue?
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btn-confirm-clear" class="btn btn-success" data-dismiss="modal">Yes</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="modal fade" id="ack-modal" role="dialog"></div> <!-- Filled in on load dynamically -->
 
 </body>
