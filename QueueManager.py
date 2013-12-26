@@ -63,6 +63,7 @@ class MarkAsHelped(webapp2.RequestHandler):
             return
         hr = q.get()
         hr.been_helped = True
+        hr.helped_datetime = datetime.now()
         hr.attending_ta = user.email()
         hr.put()
         ChannelManager.queue_update()

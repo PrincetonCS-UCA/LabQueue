@@ -1,4 +1,4 @@
-application: golden-cove-356
+application: s~golden-cove-356
 version: 4
 runtime: python27
 api_version: 1
@@ -36,3 +36,6 @@ libraries:
 
 inbound_services:
 - channel_presence
+
+builtins:
+- remote_api: on
