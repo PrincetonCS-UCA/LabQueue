@@ -9,8 +9,8 @@ from google.appengine.ext import ndb
 import base64
 
 import QueueManager, ChannelManager, LabTA
+import logging
 
-import ConfigDefaults
 import LabTAUtils
 from LabTA import is_ta
 
