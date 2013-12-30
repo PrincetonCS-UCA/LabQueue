@@ -15,12 +15,13 @@
     if ('{{ is_ta }}' == 'True') is_ta = true;
     else                         is_ta = false;
     initial_queue = atob('{{ queue }}'); // this comes in b64 encoded to escape weird chars
+    active_tas = {{ active_tas }};
 </script>
 <!-- NOW THE REST OF THE JS -->
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 <script src="../js/bootstrap.min.js"></script>
 <script type="text/javascript" src="/_ah/channel/jsapi"></script>
-<script type="text/javascript" src="/js/labtas-4.0.js"></script>
+<script type="text/javascript" src="/js/labtas-4.1.js"></script>
 
 
 <div class="container">
@@ -38,6 +39,10 @@
         </div>
         <div class="col-md-10">
             <h2>Help Queue</h2>
+            <h4>
+                <span id="wait_text">blah</span>
+                <span id="wait_time" class="label label-success">blah</span>
+            </h4>
             <table id="table-queue" class="table table-striped">
                 <tr id="table-header">
                     <td class="hr-number">Number</td>

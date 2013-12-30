@@ -1,14 +1,13 @@
 import logging
 from datetime import datetime, timedelta
 import webapp2
-from google.appengine.api import channel, users
+from google.appengine.api import channel, users, memcache
 from google.appengine.ext import ndb
 from HelpRequest import HelpRequest, help_queue_key
-from LabTA import LabTA, labta_key
-import ConfigDefaults
+from LabTA import LabTA, labta_key, is_ta
+import ActiveTAs
 import json
 import ChannelManager
-
 
 def get_json_queue():
     q = HelpRequest.query(ancestor=help_queue_key())
@@ -61,6 +60,7 @@ class MarkAsHelped(webapp2.RequestHandler):
         if q.count() != 1:
             logging.error("Database corrupted for user {}".format(user.email()))
             return
+        ActiveTAs.update_active_tas(user.email())
         hr = q.get()
         hr.been_helped = True
         hr.helped_datetime = datetime.utcnow()
@@ -79,6 +79,8 @@ class CancelFromQueue(webapp2.RequestHandler):
         if q.count() != 1:
             logging.error("Database corrupted for user {}".format(user.email()))
             return
+        if is_ta(user.email()):
+            ActiveTAs.update_active_tas(user.email())
         hr = q.get()
         hr.canceled = True
         hr.put()

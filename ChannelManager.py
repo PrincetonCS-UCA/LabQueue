@@ -3,6 +3,7 @@ import webapp2
 from google.appengine.api import channel, memcache
 import QueueManager
 import json
+import ActiveTAs
 
 SUBSCRIBERS_KEY = 'subscribers'
 
@@ -42,7 +43,7 @@ def queue_update():
     json_queue = QueueManager.get_json_queue()
     logging.info("sending notifications")
     subs = memcache.get(SUBSCRIBERS_KEY)
-    msg = json.dumps({'type': 'queue', 'data': json_queue})
+    msg = json.dumps({'type': 'queue', 'data': json_queue, 'active_tas': ActiveTAs.get_num_active()})
     for s in subs:
         channel.send_message(s, msg)
 

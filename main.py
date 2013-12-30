@@ -1,14 +1,10 @@
 import os
 import logging
-from datetime import datetime, timedelta
-
 import webapp2
 import jinja2
 from google.appengine.api import users, channel
-from google.appengine.ext import ndb
 import base64
-
-import QueueManager, ChannelManager, LabTA
+import QueueManager, ChannelManager, LabTA, ActiveTAs
 import logging
 
 import LabTAUtils
@@ -17,6 +13,7 @@ from LabTA import is_ta
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'])
+AVERAGE_WORK_TIME = 15  # Number if minutes a TA spends on the typical student
 
 class MainPage(webapp2.RequestHandler):
     def get(self):
@@ -29,7 +26,8 @@ class MainPage(webapp2.RequestHandler):
                            'is_ta': is_ta(user.email()),
                            'curr_user': user.email(),
                            'token': token,
-                           'queue': base64.b64encode(json_queue)}
+                           'queue': base64.b64encode(json_queue),
+                           'active_tas': ActiveTAs.get_num_active()}
         template = JINJA_ENVIRONMENT.get_template('templates/HelpQueue.html')
         self.response.write(template.render(template_values))
 

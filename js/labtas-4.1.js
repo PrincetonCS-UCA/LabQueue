@@ -1,3 +1,5 @@
+TA_RATE = 14.49; // average time spent by a TA on a student
+
 queue = [];
 newRequests = 0;
 titleText = "COS Help Queue";
@@ -18,6 +20,7 @@ onMessage = function(m) {
     console.log(msg.type);
     if (msg.type == "queue")
     {
+        active_tas = msg.active_tas;
         var newQueue = obj;
         if (newQueue.length > queue.length && !pageActive)
         {
@@ -61,6 +64,38 @@ refreshQueue = function() {
         }
         table.append(new_row);
     }
+    update_wait();
+}
+
+update_wait = function () {
+    if (active_tas < 2) active_tas = 2;
+    var queue_pos = queue.length; // default to end if not in the queue
+    for (var i = 0; i < queue.length; i++) {
+        if (queue[i].email == curr_user)
+        {
+            queue_pos = i;
+            break;
+        }
+    }
+
+    var wait_time = Math.round(TA_RATE / active_tas * queue_pos);
+    if (queue_pos <= 2) wait_time = Math.min(5, wait_time);
+
+    if (queue_pos == queue.length)
+        $("#wait_text").text("Expected Wait Time from the End of the Queue: ");
+    else
+        $("#wait_text").text("Your Expected Wait Time: ");
+
+    if (wait_time <= 5)
+        $("#wait_time").text("< 5 minutes").removeClass().addClass("label label-success");
+    else if (wait_time <= 15)
+        $("#wait_time").text(wait_time + " minutes").removeClass().addClass("label label-success");
+    else if (wait_time <= 30)
+        $("#wait_time").text(wait_time + " minutes").removeClass().addClass("label label-warning");
+    else if (wait_time <= 45)
+        $("#wait_time").text(wait_time + " minutes").removeClass().addClass("label label-danger");
+    else
+        $("#wait_time").text("> 45 minutes").removeClass().addClass("label label-danger");
 }
 
 closeRequest = function(e) {
