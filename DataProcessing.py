@@ -7,6 +7,7 @@ from copy import deepcopy
 import hashlib
 from random import random
 import matplotlib.pyplot as plt
+import math
 
 ## First argument is the input filename in csv format,
 ## the first row should be a column header.
@@ -175,8 +176,8 @@ def wait_times(reqs):
         tmp = filter(lambda x: x[1].time() >= t1 and x[1].time() < t2, delts)
         print 'AVERAGE WAIT TIME BETWEEN {} AND {}: {:.2f}'.format(t1.isoformat(), t2.isoformat(),
                                                                    numpy.mean([x[0] for x in tmp]))
-    plt.hist([x[0] for x in delts])
-    plt.show()
+    #plt.hist([x[0] for x in delts])
+    #plt.show()
     # We want to show that requests are mostly answered in a short period of time
     # Output data needed for chart where X -- Time Waited Y -- Percent of Requests
     # Point being, majority of requests are answered pretty quickly
@@ -232,8 +233,12 @@ def ta_request_times(reqs):
     print 'NUMBER OF USABLE OBSERVATIONS: {}'.format(len(work_times))
     print 'AVERAGE WORK TIME: {:.2f} MINUTES'.format(numpy.mean([x[0] for x in work_times]))
     print 'STDEV WORK TIME: {:.2f} MINUTES'.format(numpy.std([x[0] for x in work_times]))
-    #plt.hist([x[0] for x in work_times])
-    #plt.show()
+    plt.hist([x[0] for x in work_times], normed=True)
+    x = numpy.linspace(0, 45, 1000)
+    l = 1/14.49
+    y = l * numpy.power(numpy.e, -l * x)
+    plt.plot(x, y)
+    plt.show()
     print 'SHOWING BREAKDOWN BY CLASS'
     c109 = filter(lambda x: x[1] == 'COS 109', work_times)
     print 'AVERAGE WORK TIME ON COS 109 STUDENTS: {:.2f}'.format(numpy.mean([x[0] for x in c109]))
