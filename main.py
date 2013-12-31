@@ -4,7 +4,7 @@ import webapp2
 import jinja2
 from google.appengine.api import users, channel
 import base64
-import QueueManager, ChannelManager, LabTA, ActiveTAs
+import QueueManager, ChannelManager, LabTA
 import logging
 
 import LabTAUtils
@@ -27,7 +27,7 @@ class MainPage(webapp2.RequestHandler):
                            'curr_user': user.email(),
                            'token': token,
                            'queue': base64.b64encode(json_queue),
-                           'active_tas': ActiveTAs.get_num_active()}
+                           'active_tas': LabTA.update_active_tas()}
         template = JINJA_ENVIRONMENT.get_template('templates/HelpQueue.html')
         self.response.write(template.render(template_values))
 
