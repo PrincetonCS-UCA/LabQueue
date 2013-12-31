@@ -3,17 +3,44 @@ import webapp2
 import logging
 import jinja2
 import os
+from google.appengine.api import memcache
+from datetime import datetime, timedelta
 
+ACTIVE_TAS_KEY = 'tas'
+MAX_INACTIVITY_TIME = timedelta(minutes=45)
+DEFAULT_ACTIVE = 2  # If the cache is empty for whatever reason, guess there are 2 active TAs
 LABTA_GROUP_NAME = 'default_tas'
 IMAGE_DIRECTORY = 'img/TAs'
 ROW_LENGTH = 3
-
-def labta_key(labta_group_name=LABTA_GROUP_NAME):
-    return ndb.Key('LabTA', labta_group_name)
-
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'])
+
+# Refreshes the memcached active TA object.
+# If passed in a TA, it adds/updates that TA.
+# If no parameter or None is given, it will only refresh.
+# Returns the number of TAs we believe are active.
+def update_active_tas(ta=None):
+    client = memcache.Client()
+    if client.get(ACTIVE_TAS_KEY) is None:
+        client.add(ACTIVE_TAS_KEY, {})
+    while True:
+        d = client.gets(ACTIVE_TAS_KEY)
+        now = datetime.utcnow()
+        if ta is not None:
+            d[ta] = now
+        to_remove = []
+        for k,v in d.iteritems():
+            if now - v > MAX_INACTIVITY_TIME:
+                to_remove.append(k)
+        for k in to_remove:
+            del d[k]
+        if client.cas(ACTIVE_TAS_KEY, d):
+            break
+    return len(d)
+
+def labta_key(labta_group_name=LABTA_GROUP_NAME):
+    return ndb.Key('LabTA', labta_group_name)
 
 class LabTA(ndb.Model):
     first_name = ndb.StringProperty()
@@ -40,8 +67,8 @@ class TAFacebook(webapp2.RequestHandler):
         active_tas = LabTA.query(LabTA.is_active == True, ancestor=labta_key()).order(LabTA.class_year)
         # see if we have a picture of the TAs, otherwise mark them as using the default
         template = JINJA_ENVIRONMENT.get_template('templates/Facebook.html')
-        self.response.write(template.render({'tas' : active_tas,
-                                             'ROW_LENGTH' : ROW_LENGTH}))
+        self.response.write(template.render({'tas': active_tas,
+                                             'ROW_LENGTH': ROW_LENGTH}))
 
 class AcknowledgeModal(webapp2.RequestHandler):
     def get(self):
