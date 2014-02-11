@@ -22,7 +22,7 @@ LEAVE = 1
 def load_data_into_mem(fname):
     dr = DictReader(open(fname, 'r'))
     def utc_to_est(x):
-        delt = timedelta(hours=5) # EST offset -0500 from UTC
+        delt = timedelta(hours=5)  # EST offset -0500 from UTC
         req_dt = datetime.strptime(x['request_datetime'], ISO_FORMAT)
         x['request_datetime'] = req_dt - delt
         if x['helped_datetime'] != '':
@@ -60,6 +60,20 @@ def general_stats(all_reqs, helped):
     print 'PERCENT TA HELPED: {:.1f}%'.format(float(count_accepted) / total * 100.0)
     count_canceled = total - count_accepted
     print 'PERCENT CANCELED: {:.1f}%'.format(float(count_canceled) / total * 100.0)
+
+    fname = 'day_series.csv'
+    print 'OUTPUTTING REQUESTS BY DAY TO {}'.format(fname)
+    writer = csv.writer(open(fname, 'w'))
+    writer.writerow(['Date', 'NumRequests'])
+    sum = 0
+    curr_date = all_reqs[0]['request_datetime'].date()
+    for hr in all_reqs:
+        if hr['request_datetime'].date() != curr_date:
+            writer.writerow([curr_date.isoformat(), sum])
+            curr_date = hr['request_datetime'].date()
+            sum = 1
+        else:
+            sum += 1
     print
 
 def class_dist(helped):
@@ -223,13 +237,16 @@ def ta_request_times(reqs):
             if queue_len == 0:
                 ta_flags.clear()
 
-    dist_fname = 'work_dist.csv'
-    print 'OUTPUTTING WORK TIME DIST TO {}'.format(dist_fname)
-    dist_writer = csv.writer(open(dist_fname, 'w'))
-    dist_writer.writerow(['Course', 'TimeSpent'])
-    map(lambda x: dist_writer.writerow((x[0], x[1])), work_times)
+    fname = 'work_dist.csv'
+    print 'OUTPUTTING WORK TIME DIST TO {}'.format(fname)
+    writer = csv.writer(open(fname, 'w'))
+    writer.writerow(['BinStart', 'PercentRequests'])
+    tmp = [x[0] for x in work_times]
+    for i in range (0,45,5):
+        num_times = len(filter(lambda x: x > i and x < i + 5, tmp))
+        print num_times
+        writer.writerow([(i + i + 5.0) / 2.0, float(num_times)/len(work_times)/5])
 
-    dist_writer.writerow(['TimeWaited', 'PercentRequestFilled'])
     print 'NUMBER OF USABLE OBSERVATIONS: {}'.format(len(work_times))
     print 'AVERAGE WORK TIME: {:.2f} MINUTES'.format(numpy.mean([x[0] for x in work_times]))
     print 'STDEV WORK TIME: {:.2f} MINUTES'.format(numpy.std([x[0] for x in work_times]))
@@ -238,7 +255,7 @@ def ta_request_times(reqs):
     l = 1/14.49
     y = l * numpy.power(numpy.e, -l * x)
     plt.plot(x, y)
-    plt.show()
+    #plt.show()
     print 'SHOWING BREAKDOWN BY CLASS'
     c109 = filter(lambda x: x[1] == 'COS 109', work_times)
     print 'AVERAGE WORK TIME ON COS 109 STUDENTS: {:.2f}'.format(numpy.mean([x[0] for x in c109]))
