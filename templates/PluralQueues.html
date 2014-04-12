@@ -17,7 +17,8 @@
     else                         is_ta = false;
     initial_queue = atob('{{ queue }}'); // this comes in b64 encoded to escape weird chars
     active_tas = {{ active_tas }};
-    initial_locations = {{ locations }};
+    initial_queues = {{ queues | tojson}};
+
 </script>
 <!-- NOW THE REST OF THE JS -->
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
@@ -44,7 +45,7 @@
             <div class="tab-content" id="queue-tab">
 
                 <ul id="queue-tabs" class="nav nav-tabs">
-                    {% for loc in locations %}
+                    {% for loc in queues %}
                         {% if loop.first %}<li class="active">
                         {% else %}<li>
                         {% endif %}
@@ -52,7 +53,7 @@
                     {% endfor %}
                 </ul>
 
-                {% for q in locations %}
+                {% for q in queues %}
                     {% if loop.first %}
                         <div class="tab-pane fade in active" id="{{q.id}}" data-toggle="tab">
                     {% else %}
@@ -119,7 +120,7 @@
                 <label for="location" class="col-lg-2 control-label">Location</label>
                 <div class="col-lg-6">
                     <select class="form-control" name="location">
-                        {% for loc in locations %}
+                        {% for loc in queues %}
                             <option>{{loc.name}}</option>
                         {% endfor %}
                     </select>

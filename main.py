@@ -13,6 +13,8 @@ from LabTA import is_ta
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'])
+JINJA_ENVIRONMENT.filters['tojson'] = json.dumps
+
 AVERAGE_WORK_TIME = 15  # Number if minutes a TA spends on the typical student
 
 class MainPage(webapp2.RequestHandler):
@@ -22,22 +24,24 @@ class MainPage(webapp2.RequestHandler):
         token = channel.create_channel(user.email())
         if is_ta(user.email()):
             logging.info("{} is a TA".format(user.email()))
-        locations = QueueManager.get_locations()
 
-        q = QueueManager.get_queue()
+        qs = QueueManager.get_queues()
+        # locations = QueueManager.get_locations()
 
-        for loc in locations:
-          print 'doing scan for loc: ', loc['name']
-          loc['contents'] = [entry for entry in q if entry['location'] == loc['name']]
-          print loc['contents']
-          loc['contents'] = json.dumps(loc['contents'])
+        # q = QueueManager.get_queue()
+
+        # for loc in locations:
+        #   print 'doing scan for loc: ', loc['name']
+        #   loc['contents'] = [entry for entry in q if entry['location'] == loc['name']]
+        #   print loc['contents']
+        #   loc['contents'] = json.dumps(loc['contents'])
 
         template_values = {'logout_url': users.create_logout_url('/'),
                            'is_ta': is_ta(user.email()),
                            'curr_user': user.email(),
                            'token': token,
                            'queue': base64.b64encode(json_queue),
-                           'locations': locations,
+                           'queues': qs,
                            'active_tas': LabTA.update_active_tas()}
         template = JINJA_ENVIRONMENT.get_template('templates/PluralQueues.html')
         self.response.write(template.render(template_values))

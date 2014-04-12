@@ -14,10 +14,26 @@ def get_locations():
     return [friend, frist]
 
 def get_json_queue():
-    q = get_queue()
+    q = get_whole_queue()
     return json.dumps(q)
 
-def get_queue():
+# Returns a list of locations with attached queues.
+def get_queues():
+    q = get_whole_queue()
+    locations = get_locations()
+    for loc in locations:
+      loc['queue'] = [entry for entry in q if entry['location'] == loc['name']]
+      #loc['queue'] = json.dumps(loc['queue'])
+    return locations
+
+def get_json_queues():
+    qs = get_queues()
+    #for q in qs:
+    #    q['queue'] = json.dumps(q['queue'])
+
+    return json.dumps(qs)
+
+def get_whole_queue():
     q = HelpRequest.query(ancestor=help_queue_key())
     q = q.filter(HelpRequest.been_helped == False)
     q = q.filter(HelpRequest.canceled == False)

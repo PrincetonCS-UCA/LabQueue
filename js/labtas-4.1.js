@@ -1,21 +1,26 @@
 TA_RATE = 14.49; // average time spent by a TA on a student
 
-locations = [];
-queue = [];
+queues = [];
+//queue = [];
 newRequests = 0;
 titleText = "COS Help Queue";
 pageActive = true;
 
 onOpen = function() {
     queue = JSON.parse(initial_queue);
-    locations = initial_locations;
-    for (var i = 0; i < locations.length; i++) {
-        locations[i]['contents'] = JSON.parse(locations[i]['contents']);
-        var qid = locations[i]['id'];
+    queues = initial_queues;
+    // queues = JSON.parse(initial_queues);
+    console.log(queues.length);
+    console.log(queues);
+    console.log("=======================")
+
+    for (var i = 0; i < queues.length; i++) {
+        //queues[i]['queue'] = JSON.parse(queues[i]['queue']);
+        var qid = queues[i]['id'];
         $("#table-queue-" + qid).on("click", ".close-req", handler=closeRequest);
         $("#table-queue-" + qid).on("click", ".cancel-req", handler=cancelRequest);
     }
-    console.log(locations);
+    console.log(queues);
     refreshQueue();
 }
 
@@ -27,19 +32,38 @@ onMessage = function(m) {
     var msg = JSON.parse(m.data);
     var obj = JSON.parse(msg.data);
     console.log(msg.type);
+    console.log(msg.data);
+
     if (msg.type == "queue")
     {
+
+        // for (var i = 0; i < obj.length; i++) {
+        //     obj[i]['queue'] = JSON.parse(obj[i]['queue']);
+        // }
+        console.log("printing parsed obj");
+        console.log(obj);
+
         active_tas = msg.active_tas;
-        var newQueue = obj;
-        if (newQueue.length > queue.length && !pageActive)
+        var newQueues = obj;
+
+        var old_length = 0;
+        var new_length = 0;
+        for (var i = 0; i < newQueues.length; i++) {
+            new_length += newQueues[i].length;
+        }
+        for (var i = 0; i < queues.length; i++){
+            old_length += queues[i].length;
+        }
+
+        if (new_length > old_length && !pageActive)
         {
-            newRequests += newQueue.length - queue.length;
+            newRequests += new_length - old_length;
             if (newRequests == 1)
                 document.title = newRequests + " New Request!";
             else
                 document.title = newRequests + " New Requests!";
         }
-        queue = newQueue;
+        queues = newQueues;
         refreshQueue();
     }
     else if (msg.type == "request_ack")
@@ -52,16 +76,16 @@ onMessage = function(m) {
 
 refreshQueue = function() {
 
-    for (var j = 0; j < locations.length; j++) {
+    for (var j = 0; j < queues.length; j++) {
 
-        var qid = locations[j].id;
+        var qid = queues[j].id;
         var table = $("#table-queue-" + qid);
         table.find("tr:gt(0)").remove();
         var header = $("#table-header-" + qid);
         var curr_queue = $("#table-header-" + qid).nextAll();
         var button_template = $("#queue-btn-template");
 
-        var q = locations[j]['contents']
+        var q = queues[j]['queue']
         console.log(q);
         console.log(q.length);
         console.log('starting loop');
@@ -91,10 +115,10 @@ refreshQueue = function() {
 update_wait = function () {
     if (active_tas < 2) active_tas = 2;
 
-    for (var l = 0; l < locations.length; l++) {
+    for (var l = 0; l < queues.length; l++) {
 
-        var q = locations[l]['contents'];
-        var qid = locations[l]['id'];
+        var q = queues[l]['queue'];
+        var qid = queues[l]['id'];
 
         var queue_pos = q.length; // default to end if not in the queue
         for (var i = 0; i < q.length; i++) {
@@ -209,7 +233,6 @@ $(document).ready(function() {
     $(window).on("blur focus", viewChange);
     console.log(curr_user)
     console.log(is_ta)
-    console.log(initial_queue)
 })
 
 
