@@ -8,7 +8,16 @@ from LabTA import LabTA, labta_key, is_ta, update_active_tas
 import json
 import ChannelManager
 
+def get_locations():
+    friend = {'name': 'Friend Center', 'id': 'FriendCenter'}
+    frist = {'name': 'Frist Center', 'id': 'FristCenter'}
+    return [friend, frist]
+
 def get_json_queue():
+    q = get_queue()
+    return json.dumps(q)
+
+def get_queue():
     q = HelpRequest.query(ancestor=help_queue_key())
     q = q.filter(HelpRequest.been_helped == False)
     q = q.filter(HelpRequest.canceled == False)
@@ -21,8 +30,9 @@ def get_json_queue():
         tmp['email'] = e.netid
         tmp['help_msg'] = e.help_msg
         tmp['course'] = e.course
+        tmp['location'] = e.location
         queue.append(tmp)
-    return json.dumps(queue)
+    return queue
 
 class GetQueue(webapp2.RequestHandler):
     # returns the current queue as a JSON object
@@ -35,6 +45,7 @@ class GetQueue(webapp2.RequestHandler):
 
 class AddToQueue(webapp2.RequestHandler):
     def post(self):
+        print 'In QueueManager.AddToQueue'
         user = users.get_current_user()
         q = HelpRequest.query(HelpRequest.in_queue == True,
                               HelpRequest.netid == user.email(),
@@ -47,6 +58,8 @@ class AddToQueue(webapp2.RequestHandler):
         hr.name = self.request.get('name')
         hr.help_msg = self.request.get('help_msg')
         hr.course = self.request.get('course')
+        hr.location = self.request.get('location')
+        print hr.location
         hr.put()
         ChannelManager.queue_update()
 
