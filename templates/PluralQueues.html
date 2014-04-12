@@ -17,12 +17,11 @@
     else                         is_ta = false;
     initial_queue = atob('{{ queue }}'); // this comes in b64 encoded to escape weird chars
     active_tas = {{ active_tas }};
-    locations = {{ locations }};
+    initial_locations = {{ locations }};
 </script>
 <!-- NOW THE REST OF THE JS -->
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 <script src="../js/bootstrap.min.js"></script>
-<script src="../js/tab.js"></script>
 <script type="text/javascript" src="/_ah/channel/jsapi"></script>
 <script type="text/javascript" src="/js/labtas-4.1.js"></script>
 

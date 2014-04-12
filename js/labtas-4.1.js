@@ -1,5 +1,6 @@
 TA_RATE = 14.49; // average time spent by a TA on a student
 
+locations = [];
 queue = [];
 newRequests = 0;
 titleText = "COS Help Queue";
@@ -7,6 +8,14 @@ pageActive = true;
 
 onOpen = function() {
     queue = JSON.parse(initial_queue);
+    locations = initial_locations;
+    for (var i = 0; i < locations.length; i++) {
+        locations[i]['contents'] = JSON.parse(locations[i]['contents']);
+        var qid = locations[i]['id'];
+        $("#table-queue-" + qid).on("click", ".close-req", handler=closeRequest);
+        $("#table-queue-" + qid).on("click", ".cancel-req", handler=cancelRequest);
+    }
+    console.log(locations);
     refreshQueue();
 }
 
@@ -42,60 +51,79 @@ onMessage = function(m) {
 }
 
 refreshQueue = function() {
-    var table = $("#table-queue");
-    table.find("tr:gt(0)").remove();
-    var header = $("#table-header");
-    var curr_queue = $("#table-header").nextAll();
-    var button_template = $("#queue-btn-template");
-    for (var i = 0; i < queue.length; i++) {
-        var new_row = header.clone();
-        new_row.children(".hr-number").html(i + 1)
-        new_row.children(".hr-name").html(queue[i].name);
-        new_row.children(".hr-email").html(queue[i].email);
-        if (is_ta || queue[i].email == curr_user)
-        {
-            new_row.children(".hr-action").html(button_template.html());
+
+    for (var j = 0; j < locations.length; j++) {
+
+        var qid = locations[j].id;
+        var table = $("#table-queue-" + qid);
+        table.find("tr:gt(0)").remove();
+        var header = $("#table-header-" + qid);
+        var curr_queue = $("#table-header-" + qid).nextAll();
+        var button_template = $("#queue-btn-template");
+
+        var q = locations[j]['contents']
+        console.log(q);
+        console.log(q.length);
+        console.log('starting loop');
+
+        for (var i = 0; i < q.length; i++) {
+            console.log(q[i]);
+            var new_row = header.clone();
+            new_row.children(".hr-number").html(i + 1)
+            new_row.children(".hr-name").html(q[i].name);
+            new_row.children(".hr-email").html(q[i].email);
+            if (is_ta || q[i].email == curr_user)
+            {
+                new_row.children(".hr-action").html(button_template.html());
+            }
+            else new_row.children(".hr-action").html("");
+            if (is_ta)
+            {
+                new_row.children(".hr-course").html(q[i].course);
+                new_row.children(".hr-msg").html(q[i].help_msg);
+            }
+            table.append(new_row);
         }
-        else new_row.children(".hr-action").html("");
-        if (is_ta)
-        {
-            new_row.children(".hr-course").html(queue[i].course);
-            new_row.children(".hr-msg").html(queue[i].help_msg);
-        }
-        table.append(new_row);
     }
     update_wait();
 }
 
 update_wait = function () {
     if (active_tas < 2) active_tas = 2;
-    var queue_pos = queue.length; // default to end if not in the queue
-    for (var i = 0; i < queue.length; i++) {
-        if (queue[i].email == curr_user)
-        {
-            queue_pos = i;
-            break;
+
+    for (var l = 0; l < locations.length; l++) {
+
+        var q = locations[l]['contents'];
+        var qid = locations[l]['id'];
+
+        var queue_pos = q.length; // default to end if not in the queue
+        for (var i = 0; i < q.length; i++) {
+            if (q[i].email == curr_user)
+            {
+                queue_pos = i;
+                break;
+            }
         }
+
+        var wait_time = Math.round(TA_RATE / active_tas * queue_pos);
+        if (queue_pos <= 2) wait_time = Math.min(5, wait_time);
+
+        if (queue_pos == q.length)
+            $("#wait_text_" + qid).text("Expected Wait Time from the End of the Queue: ");
+        else
+            $("#wait_text_" + qid).text("Your Expected Wait Time: ");
+
+        if (wait_time <= 5)
+            $("#wait_time_" + qid).text("< 5 minutes").removeClass().addClass("label label-success");
+        else if (wait_time <= 15)
+            $("#wait_time_" + qid).text(wait_time + " minutes").removeClass().addClass("label label-success");
+        else if (wait_time <= 30)
+            $("#wait_time_" + qid).text(wait_time + " minutes").removeClass().addClass("label label-warning");
+        else if (wait_time <= 45)
+            $("#wait_time_" + qid).text(wait_time + " minutes").removeClass().addClass("label label-danger");
+        else
+            $("#wait_time_" + qid).text("> 45 minutes").removeClass().addClass("label label-danger");
     }
-
-    var wait_time = Math.round(TA_RATE / active_tas * queue_pos);
-    if (queue_pos <= 2) wait_time = Math.min(5, wait_time);
-
-    if (queue_pos == queue.length)
-        $("#wait_text").text("Expected Wait Time from the End of the Queue: ");
-    else
-        $("#wait_text").text("Your Expected Wait Time: ");
-
-    if (wait_time <= 5)
-        $("#wait_time").text("< 5 minutes").removeClass().addClass("label label-success");
-    else if (wait_time <= 15)
-        $("#wait_time").text(wait_time + " minutes").removeClass().addClass("label label-success");
-    else if (wait_time <= 30)
-        $("#wait_time").text(wait_time + " minutes").removeClass().addClass("label label-warning");
-    else if (wait_time <= 45)
-        $("#wait_time").text(wait_time + " minutes").removeClass().addClass("label label-danger");
-    else
-        $("#wait_time").text("> 45 minutes").removeClass().addClass("label label-danger");
 }
 
 closeRequest = function(e) {
@@ -174,8 +202,8 @@ $(document).ready(function() {
         'onclose': function() {}
         };
     var socket = channel.open(handler)
-    $("#table-queue").on("click", ".close-req", handler=closeRequest);
-    $("#table-queue").on("click", ".cancel-req", handler=cancelRequest);
+    // $("#table-queue").on("click", ".close-req", handler=closeRequest);
+    // $("#table-queue").on("click", ".cancel-req", handler=cancelRequest);
     $("#form-submit").on("submit", handler=enterQueue);
     $("#btn-confirm-clear").on("click", handler=clearQueue);
     $(window).on("blur focus", viewChange);
