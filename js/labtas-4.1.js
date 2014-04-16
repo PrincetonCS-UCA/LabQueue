@@ -60,6 +60,7 @@ onMessage = function(m) {
 refreshQueue = function() {
 
     console.log(is_ta);
+    console.log(queues);
 
     for (var j = 0; j < queues.length; j++) {
 
@@ -99,13 +100,12 @@ refreshQueue = function() {
 
 update_wait = function () {
 
-    if (active_tas < 1) active_tas = 1;
-
     for (var l = 0; l < queues.length; l++) {
 
         var q = queues[l]['queue'];
         var qid = queues[l]['id'];
         var active_tas = queues[l]['num_tas'];
+        if (active_tas < 1) active_tas = 1;
 
         var queue_pos = q.length; // default to end if not in the queue
         for (var i = 0; i < q.length; i++) {
@@ -117,6 +117,7 @@ update_wait = function () {
         }
 
         var wait_time = Math.round(TA_RATE / active_tas * queue_pos);
+
         if (queue_pos <= 2) wait_time = Math.min(5, wait_time);
 
         if (queue_pos == q.length)

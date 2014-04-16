@@ -20,7 +20,6 @@ AVERAGE_WORK_TIME = 15  # Number if minutes a TA spends on the typical student
 class MainPage(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
-        json_queue = QueueManager.get_json_queue()
         token = channel.create_channel(user.email())
         if is_ta(user.email()):
             logging.info("{} is a TA".format(user.email()))

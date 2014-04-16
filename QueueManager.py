@@ -13,10 +13,6 @@ def get_locations():
     frist = {'name': 'Frist Center', 'id': 'FristCenter'}
     return [friend, frist]
 
-def get_json_queue():
-    q = get_whole_queue()
-    return json.dumps(q)
-
 # Returns a list of locations with attached queues.
 def get_queues():
     q = get_whole_queue()
@@ -54,7 +50,7 @@ class GetQueue(webapp2.RequestHandler):
     # assume the channel was already created
     def get(self):
         user = users.get_current_user()
-        json_queue = get_json_queue()
+        json_queue = get_json_queues()
         channel.send_message(user.email(), json_queue)
 
 class AddToQueue(webapp2.RequestHandler):
