@@ -7,9 +7,6 @@ pageActive = true;
 
 onOpen = function() {
     queues = initial_queues;
-    console.log("onOpen");
-    console.log(queues);
-
     for (var i = 0; i < queues.length; i++) {
         var qid = queues[i]['id'];
         $("#table-queue-" + qid).on("click", ".close-req", handler=closeRequest);
@@ -76,7 +73,6 @@ refreshQueue = function() {
         var q = queues[j]['queue']
 
         for (var i = 0; i < q.length; i++) {
-            console.log(q[i]);
             var new_row = header.clone();
             new_row.children(".hr-number").html(i + 1)
             new_row.children(".hr-name").html(q[i].name);
@@ -169,7 +165,6 @@ queueError = function() {
 
 enterQueue = function(e) {
     console.log("enter queue");
-    console.log(e);
     e.preventDefault();
     if (isInQueue(curr_user))
     {
@@ -202,8 +197,10 @@ viewChange = function(e) {
 
 isInQueue = function(usr) {
     for (var i = 0; i < queues.length; i++) {
-        for (var j = 0; j < queues[i].length; j++) {
-            if (queues[i]['queue'].email == usr) return true;
+        for (var j = 0; j < queues[i]['queue'].length; j++) {
+            if (queues[i]['queue'][j].email == usr) {
+                return true;
+            }
         }
     }
     return false;
