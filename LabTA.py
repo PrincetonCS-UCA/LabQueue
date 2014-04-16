@@ -20,7 +20,7 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 # If passed in a TA, it adds/updates that TA.
 # If no parameter or None is given, it will only refresh.
 # Returns the number of TAs we believe are active.
-def update_active_tas(ta=None):
+def update_active_tas(ta=None, location=None):
     client = memcache.Client()
     if client.get(ACTIVE_TAS_KEY) is None:
         client.add(ACTIVE_TAS_KEY, {})

@@ -26,15 +26,6 @@ class MainPage(webapp2.RequestHandler):
             logging.info("{} is a TA".format(user.email()))
 
         qs = QueueManager.get_queues()
-        # locations = QueueManager.get_locations()
-
-        # q = QueueManager.get_queue()
-
-        # for loc in locations:
-        #   print 'doing scan for loc: ', loc['name']
-        #   loc['contents'] = [entry for entry in q if entry['location'] == loc['name']]
-        #   print loc['contents']
-        #   loc['contents'] = json.dumps(loc['contents'])
 
         template_values = {'logout_url': users.create_logout_url('/'),
                            'is_ta': is_ta(user.email()),

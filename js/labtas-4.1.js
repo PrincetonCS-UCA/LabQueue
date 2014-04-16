@@ -9,18 +9,12 @@ pageActive = true;
 onOpen = function() {
     queue = JSON.parse(initial_queue);
     queues = initial_queues;
-    // queues = JSON.parse(initial_queues);
-    console.log(queues.length);
-    console.log(queues);
-    console.log("=======================")
 
     for (var i = 0; i < queues.length; i++) {
-        //queues[i]['queue'] = JSON.parse(queues[i]['queue']);
         var qid = queues[i]['id'];
         $("#table-queue-" + qid).on("click", ".close-req", handler=closeRequest);
         $("#table-queue-" + qid).on("click", ".cancel-req", handler=cancelRequest);
     }
-    console.log(queues);
     refreshQueue();
 }
 
@@ -36,12 +30,6 @@ onMessage = function(m) {
 
     if (msg.type == "queue")
     {
-
-        // for (var i = 0; i < obj.length; i++) {
-        //     obj[i]['queue'] = JSON.parse(obj[i]['queue']);
-        // }
-        console.log("printing parsed obj");
-        console.log(obj);
 
         active_tas = msg.active_tas;
         var newQueues = obj;
@@ -76,6 +64,8 @@ onMessage = function(m) {
 
 refreshQueue = function() {
 
+    console.log(is_ta);
+
     for (var j = 0; j < queues.length; j++) {
 
         var qid = queues[j].id;
@@ -86,9 +76,6 @@ refreshQueue = function() {
         var button_template = $("#queue-btn-template");
 
         var q = queues[j]['queue']
-        console.log(q);
-        console.log(q.length);
-        console.log('starting loop');
 
         for (var i = 0; i < q.length; i++) {
             console.log(q[i]);
