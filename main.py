@@ -31,7 +31,7 @@ class MainPage(webapp2.RequestHandler):
                            'curr_user': user.email(),
                            'token': token,
                            'queues': qs}
-        template = JINJA_ENVIRONMENT.get_template('templates/PluralQueues.html')
+        template = JINJA_ENVIRONMENT.get_template('templates/HelpQueue.html')
         self.response.write(template.render(template_values))
 
 app = webapp2.WSGIApplication([

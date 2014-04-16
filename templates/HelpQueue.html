@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap -->
     <link href="../css/bootstrap.min.css" rel="stylesheet" media="screen">
+
 </head>
 <body>
 <!-- MAKE SURE THIS JS GOES FIRST, IT SETS IMPORTANT GLOBALS -->
@@ -14,14 +15,19 @@
     token = '{{ token }}'
     if ('{{ is_ta }}' == 'True') is_ta = true;
     else                         is_ta = false;
-    initial_queue = atob('{{ queue }}'); // this comes in b64 encoded to escape weird chars
-    active_tas = {{ active_tas }};
+    initial_queues = {{ queues | tojson}};
+
 </script>
 <!-- NOW THE REST OF THE JS -->
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 <script src="../js/bootstrap.min.js"></script>
 <script type="text/javascript" src="/_ah/channel/jsapi"></script>
 <script type="text/javascript" src="/js/labtas-4.1.js"></script>
+
+<style type="text/css">
+  .focused {
+    background-color: #d8da3d}
+</style>
 
 
 <div class="container">
@@ -38,26 +44,54 @@
             {% endif %}
         </div>
         <div class="col-md-10">
-            <h2>Help Queue</h2>
-            <h4>
-                <span id="wait_text">blah</span>
-                <span id="wait_time" class="label label-success">blah</span>
-            </h4>
-            <table id="table-queue" class="table table-striped">
-                <tr id="table-header">
-                    <td class="hr-number">Number</td>
-                    <td class="hr-name">Name</td>
-                    <td class="hr-email">Email</td>
-                    {% if is_ta %}
-                        <td class="hr-course">Course</td>
-                        <td class="hr-msg">Help Request</td>
+
+            <div class="tab-content" id="queue-tab">
+
+                <ul id="queue-tabs" class="nav nav-tabs">
+                    {% for loc in queues %}
+                        {% if loop.first %}<li class="active">
+                        {% else %}<li>
+                        {% endif %}
+                        <a href="#{{loc.id}}" data-toggle="tab">{{loc.name}}</a></li>
+                    {% endfor %}
+                </ul>
+
+                {% for q in queues %}
+                    {% if loop.first %}
+                        <div class="tab-pane fade in active" id="{{q.id}}" data-toggle="tab">
+                    {% else %}
+                        <div class="tab-pane fade in active" id="{{q.id}}" data-toggle="tab">
                     {% endif %}
-                    <td class="hr-action">Action</td>
-                </tr>
-                <!-- JS WILL INSERT ROWS BELOW -->
-            </table>
+                            <h2>Help Queue: {{q.name}}</h2>
+                            <h4>
+                                <span id="wait_text_{{q.id}}">Loading...</span>
+                                <span id="wait_time_{{q.id}}" class="label label-success">Loading...</span>
+                            </h4>
+                            <table id="table-queue-{{q.id}}" class="table table-striped">
+                                <tr id="table-header-{{q.id}}">
+                                    <td class="hr-number">Number</td>
+                                    <td class="hr-name">Name</td>
+                                    <td class="hr-email">Email</td>
+                                    {% if is_ta %}
+                                        <td class="hr-course">Course</td>
+                                        <td class="hr-msg">Help Request</td>
+                                    {% endif %}
+                                    <td class="hr-action">Action</td>
+                                </tr>
+                                <!-- JS WILL INSERT ROWS BELOW -->
+                            </table>
+                        </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
+
+    <script>
+  $(function () {
+    $('#queue-tab a:last').tab('show')
+  })
+</script>
+
 
     <div class="row">
         <form class="form-horizontal" role="form" id="form-submit">
@@ -68,7 +102,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <label for="help_msg" class="col-lg-2 control-label">Describe your problem and tell us where to find you</label>
+                <label for="help_msg" class="col-lg-2 control-label">Describe your problem</label>
                 <div class="col-lg-6">
                     <textarea class="form-control" rows="5" name="help_msg"></textarea>
                 </div>
@@ -81,6 +115,17 @@
                         <option>COS 126</option>
                         <option>COS 226</option>
                         <option>COS 217</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class ="form-group">
+                <label for="location" class="col-lg-2 control-label">Location</label>
+                <div class="col-lg-6">
+                    <select class="form-control" name="location">
+                        {% for loc in queues %}
+                            <option>{{loc.name}}</option>
+                        {% endfor %}
                     </select>
                 </div>
             </div>
