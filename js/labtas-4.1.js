@@ -9,6 +9,8 @@ pageActive = true;
 onOpen = function() {
     queue = JSON.parse(initial_queue);
     queues = initial_queues;
+    console.log("onOpen");
+    console.log(queues);
 
     for (var i = 0; i < queues.length; i++) {
         var qid = queues[i]['id'];
@@ -31,7 +33,7 @@ onMessage = function(m) {
     if (msg.type == "queue")
     {
 
-        active_tas = msg.active_tas;
+        //active_tas = msg.active_tas;
         var newQueues = obj;
 
         var old_length = 0;
@@ -100,12 +102,14 @@ refreshQueue = function() {
 }
 
 update_wait = function () {
-    if (active_tas < 2) active_tas = 2;
+
+    //if (active_tas < 2) active_tas = 2;
 
     for (var l = 0; l < queues.length; l++) {
 
         var q = queues[l]['queue'];
         var qid = queues[l]['id'];
+        var active_tas = queues[l]['num_tas'];
 
         var queue_pos = q.length; // default to end if not in the queue
         for (var i = 0; i < q.length; i++) {

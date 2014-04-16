@@ -4,7 +4,7 @@ import webapp2
 from google.appengine.api import channel, users, memcache
 from google.appengine.ext import ndb
 from HelpRequest import HelpRequest, help_queue_key
-from LabTA import LabTA, labta_key, is_ta, update_active_tas
+from LabTA import LabTA, labta_key, is_ta, update_active_tas, get_active_tas
 import json
 import ChannelManager
 
@@ -23,14 +23,12 @@ def get_queues():
     locations = get_locations()
     for loc in locations:
       loc['queue'] = [entry for entry in q if entry['location'] == loc['name']]
-      #loc['queue'] = json.dumps(loc['queue'])
+      loc['num_tas'] = get_active_tas(loc['name'])
+      print loc['name'], loc['num_tas']
     return locations
 
 def get_json_queues():
     qs = get_queues()
-    #for q in qs:
-    #    q['queue'] = json.dumps(q['queue'])
-
     return json.dumps(qs)
 
 def get_whole_queue():
@@ -88,12 +86,13 @@ class MarkAsHelped(webapp2.RequestHandler):
         if q.count() != 1:
             logging.error("Database corrupted for user {}".format(user.email()))
             return
-        update_active_tas(user.email())
+        #update_active_tas(user.email())
         hr = q.get()
         hr.been_helped = True
         hr.helped_datetime = datetime.utcnow()
         hr.attending_ta = user.email()
         hr.put()
+        update_active_tas(user.email(), hr.location)
         ChannelManager.queue_update()
         ta = LabTA.query(LabTA.email == hr.attending_ta, ancestor=labta_key()).fetch()[0]
         ChannelManager.notify_request_accepted(hr.netid, ta.first_name, ta.img_path)
@@ -107,11 +106,14 @@ class CancelFromQueue(webapp2.RequestHandler):
         if q.count() != 1:
             logging.error("Database corrupted for user {}".format(user.email()))
             return
-        if is_ta(user.email()):
-            update_active_tas(user.email())
+
         hr = q.get()
         hr.canceled = True
         hr.put()
+
+        if is_ta(user.email()):
+            update_active_tas(user.email(), hr.location)
+
         ChannelManager.queue_update()
 
 # Currently this is pretty insecure, theoretically any user could just
