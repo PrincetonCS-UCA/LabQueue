@@ -43,7 +43,7 @@ def queue_update():
     queues = QueueManager.get_json_queues()
     logging.info("sending notifications")
     subs = memcache.get(SUBSCRIBERS_KEY)
-    msg = json.dumps({'type': 'queue', 'data': queues, 'active_tas': LabTA.update_active_tas()})
+    msg = json.dumps({'type': 'queue', 'data': queues})
     for s in subs:
         channel.send_message(s, msg)
 

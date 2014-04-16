@@ -15,8 +15,6 @@
     token = '{{ token }}'
     if ('{{ is_ta }}' == 'True') is_ta = true;
     else                         is_ta = false;
-    initial_queue = atob('{{ queue }}'); // this comes in b64 encoded to escape weird chars
-    //active_tas = {{ active_tas }};
     initial_queues = {{ queues | tojson}};
 
 </script>

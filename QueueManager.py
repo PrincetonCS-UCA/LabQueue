@@ -86,7 +86,6 @@ class MarkAsHelped(webapp2.RequestHandler):
         if q.count() != 1:
             logging.error("Database corrupted for user {}".format(user.email()))
             return
-        #update_active_tas(user.email())
         hr = q.get()
         hr.been_helped = True
         hr.helped_datetime = datetime.utcnow()

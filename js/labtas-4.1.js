@@ -1,13 +1,11 @@
 TA_RATE = 14.49; // average time spent by a TA on a student
 
 queues = [];
-//queue = [];
 newRequests = 0;
 titleText = "COS Help Queue";
 pageActive = true;
 
 onOpen = function() {
-    queue = JSON.parse(initial_queue);
     queues = initial_queues;
     console.log("onOpen");
     console.log(queues);
@@ -23,7 +21,7 @@ onOpen = function() {
 onMessage = function(m) {
     console.log("incoming message");
     // this is a bit of a hack, but for now we'll ignore the
-    // race condition and just say that only if the queue grows,
+    // race condition and just say that only if the total queue grows,
     // there's new people in it
     var msg = JSON.parse(m.data);
     var obj = JSON.parse(msg.data);
@@ -32,8 +30,6 @@ onMessage = function(m) {
 
     if (msg.type == "queue")
     {
-
-        //active_tas = msg.active_tas;
         var newQueues = obj;
 
         var old_length = 0;
@@ -95,6 +91,10 @@ refreshQueue = function() {
                 new_row.children(".hr-course").html(q[i].course);
                 new_row.children(".hr-msg").html(q[i].help_msg);
             }
+            // Auto-focus tab w/ current user's request.
+            if (q[i].email == curr_user) {
+                $('#queue-tab a[href="#' + qid + '"]').tab('show');
+            }
             table.append(new_row);
         }
     }
@@ -103,7 +103,7 @@ refreshQueue = function() {
 
 update_wait = function () {
 
-    //if (active_tas < 2) active_tas = 2;
+    if (active_tas < 1) active_tas = 1;
 
     for (var l = 0; l < queues.length; l++) {
 
@@ -169,6 +169,7 @@ queueError = function() {
 
 enterQueue = function(e) {
     console.log("enter queue");
+    console.log(e);
     e.preventDefault();
     if (isInQueue(curr_user))
     {
@@ -200,8 +201,10 @@ viewChange = function(e) {
 }
 
 isInQueue = function(usr) {
-    for (var i = 0; i < queue.length; i++) {
-        if (queue[i].email == usr) return true;
+    for (var i = 0; i < queues.length; i++) {
+        for (var j = 0; j < queues[i].length; j++) {
+            if (queues[i]['queue'].email == usr) return true;
+        }
     }
     return false;
 }
@@ -217,8 +220,6 @@ $(document).ready(function() {
         'onclose': function() {}
         };
     var socket = channel.open(handler)
-    // $("#table-queue").on("click", ".close-req", handler=closeRequest);
-    // $("#table-queue").on("click", ".cancel-req", handler=cancelRequest);
     $("#form-submit").on("submit", handler=enterQueue);
     $("#btn-confirm-clear").on("click", handler=clearQueue);
     $(window).on("blur focus", viewChange);

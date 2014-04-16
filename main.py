@@ -31,9 +31,7 @@ class MainPage(webapp2.RequestHandler):
                            'is_ta': is_ta(user.email()),
                            'curr_user': user.email(),
                            'token': token,
-                           'queue': base64.b64encode(json_queue),
-                           'queues': qs,
-                           'active_tas': LabTA.update_active_tas()}
+                           'queues': qs}
         template = JINJA_ENVIRONMENT.get_template('templates/PluralQueues.html')
         self.response.write(template.render(template_values))
 
