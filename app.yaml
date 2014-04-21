@@ -1,5 +1,5 @@
 application: s~golden-cove-356
-version: 4
+version: 5
 runtime: python27
 api_version: 1
 threadsafe: yes

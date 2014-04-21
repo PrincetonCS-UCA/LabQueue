@@ -69,7 +69,6 @@ class AddToQueue(webapp2.RequestHandler):
         hr.help_msg = self.request.get('help_msg')
         hr.course = self.request.get('course')
         hr.location = self.request.get('location')
-        print hr.location
         hr.put()
         ChannelManager.queue_update()
 
