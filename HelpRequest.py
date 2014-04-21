@@ -16,6 +16,7 @@ class HelpRequest(ndb.Model):
     attending_ta = ndb.StringProperty()
     helped_datetime = ndb.DateTimeProperty()
     course = ndb.StringProperty()
+    location = ndb.StringProperty()
 
     @property
     def wait_time(self):

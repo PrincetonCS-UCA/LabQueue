@@ -20,7 +20,7 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 # If passed in a TA, it adds/updates that TA.
 # If no parameter or None is given, it will only refresh.
 # Returns the number of TAs we believe are active.
-def update_active_tas(ta=None):
+def update_active_tas(ta=None, location=None):
     client = memcache.Client()
     if client.get(ACTIVE_TAS_KEY) is None:
         client.add(ACTIVE_TAS_KEY, {})
@@ -28,16 +28,32 @@ def update_active_tas(ta=None):
         d = client.gets(ACTIVE_TAS_KEY)
         now = datetime.utcnow()
         if ta is not None:
-            d[ta] = now
+            d[ta] = {'time':now, 'location':location}
         to_remove = []
         for k,v in d.iteritems():
-            if now - v > MAX_INACTIVITY_TIME:
+            if now - v['time'] > MAX_INACTIVITY_TIME:
                 to_remove.append(k)
         for k in to_remove:
             del d[k]
         if client.cas(ACTIVE_TAS_KEY, d):
             break
     return len(d)
+
+def get_active_tas(location=None):
+    if location is None:
+        print 'none location'
+        return 0
+    client = memcache.Client()
+    if (client.get(ACTIVE_TAS_KEY) is None):
+        client.add(ACTIVE_TAS_KEY, {})
+    d = client.gets(ACTIVE_TAS_KEY)
+
+    count = 0
+    for k,v in d.iteritems():
+        print v
+        if v['location'] == location:
+            count += 1
+    return count
 
 def labta_key(labta_group_name=LABTA_GROUP_NAME):
     return ndb.Key('LabTA', labta_group_name)
