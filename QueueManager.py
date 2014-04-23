@@ -5,8 +5,14 @@ from google.appengine.api import channel, users, memcache
 from google.appengine.ext import ndb
 from HelpRequest import HelpRequest, help_queue_key
 from LabTA import LabTA, labta_key, is_ta, update_active_tas, get_active_tas
-import json
+import json, string
 import ChannelManager
+
+
+def stripString(stringy):
+    whitelist = '.!@,-=:+;&$#()_' + string.ascii_letters + string.whitespace + string.digits
+    stripped = [c for c in stringy if c in whitelist]
+    return ''.join(stripped)
 
 def get_locations():
     friend = {'name': 'Friend Center', 'id': 'FriendCenter'}
@@ -36,11 +42,11 @@ def get_whole_queue():
     queue = []
     for e in q:
         tmp = {}
-        tmp['name'] = e.name
-        tmp['email'] = e.netid
-        tmp['help_msg'] = e.help_msg
-        tmp['course'] = e.course
-        tmp['location'] = e.location
+        tmp['name'] = stripString(e.name)
+        tmp['email'] = stripString(e.netid)
+        tmp['help_msg'] = stripString(e.help_msg)
+        tmp['course'] = stripString(e.course)
+        tmp['location'] = stripString(e.location)
         queue.append(tmp)
     return queue
 
