@@ -5,22 +5,6 @@ newRequests = 0;
 titleText = "COS Help Queue";
 pageActive = true;
 
-
-var entityMap = {
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': '&quot;',
-    "'": '&#39;',
-    "/": '&#x2F;'
-};
-
-function escapeHTML(string) {
-    return String(string).replace(/[&<>"'\/]/g, function (s) {
-        return entityMap[s];
-    });
-}
-
 onOpen = function() {
     queues = initial_queues;
     for (var i = 0; i < queues.length; i++) {
@@ -92,8 +76,8 @@ refreshQueue = function() {
         for (var i = 0; i < q.length; i++) {
             var new_row = header.clone();
             new_row.children(".hr-number").html(i + 1)
-            new_row.children(".hr-name").html(escapeHTML(q[i].name));
-            new_row.children(".hr-email").html(escapeHTML(q[i].email));
+            new_row.children(".hr-name").html(q[i].name);
+            new_row.children(".hr-email").html(q[i].email);
             if (is_ta || q[i].email == curr_user)
             {
                 new_row.children(".hr-action").html(button_template.html());
@@ -101,8 +85,8 @@ refreshQueue = function() {
             else new_row.children(".hr-action").html("");
             if (is_ta)
             {
-                new_row.children(".hr-course").html(escapeHTML(q[i].course));
-                new_row.children(".hr-msg").html(escapeHTML(q[i].help_msg));
+                new_row.children(".hr-course").html(q[i].course);
+                new_row.children(".hr-msg").html(q[i].help_msg);
             }
             // Auto-focus tab w/ current user's request.
             if (q[i].email == curr_user) {

@@ -10,7 +10,8 @@ import ChannelManager
 
 
 def stripString(stringy):
-    whitelist = '.!@,-=:+;&$#()_' + string.ascii_letters + string.whitespace + string.digits
+    stringy = stringy.replace('<','&lt;').replace('>', '&gt;')
+    whitelist = ".!@,-=:+;&$#()_?/~'\"\\" + string.ascii_letters + string.whitespace + string.digits
     stripped = [c for c in stringy if c in whitelist]
     return ''.join(stripped)
 
@@ -71,8 +72,8 @@ class AddToQueue(webapp2.RequestHandler):
             return
         hr = HelpRequest(parent=help_queue_key())
         hr.netid = user.email()
-        hr.name = self.request.get('name')
-        hr.help_msg = self.request.get('help_msg')
+        hr.name = stripString(self.request.get('name'))
+        hr.help_msg = stripString(self.request.get('help_msg'))
         hr.course = self.request.get('course')
         hr.location = self.request.get('location')
         hr.put()
