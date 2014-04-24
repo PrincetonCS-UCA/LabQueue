@@ -104,8 +104,8 @@
             <div class="form-group">
                 <label for="course" class="col-lg-2 control-label">Course</label>
                 <div class="col-lg-6">
-                    <select class="form-control" name="course">
-                        <option>Select your course...</option>
+                    <select class="form-control" name="course" id="select-course">
+                        <option></option>
                         <option>ISC (Integrated Science)</option>
                         <option>COS 109</option>
                         <option>COS 126</option>
@@ -118,7 +118,8 @@
             <div class ="form-group">
                 <label for="location" class="col-lg-2 control-label">Location</label>
                 <div class="col-lg-6">
-                    <select class="form-control" name="location">
+                    <select class="form-control" name="location" id="select-location">
+                        <option></option>
                         {% for loc in queues %}
                             <option>{{loc.name}}</option>
                         {% endfor %}

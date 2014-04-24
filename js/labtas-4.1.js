@@ -172,6 +172,15 @@ enterQueue = function(e) {
         alert("You're already in the queue!");
         return false;
     }
+
+    if($("#select-course option:selected").text().length < 1) {
+        alert("Please select a course.");
+        return false;
+    }
+    if ($("#select-location option:selected").text().length < 1) {
+        alert("Please select a location.");
+        return false;
+    }
     // otherwise post to the server adding them to the queue
     $.post("/add", $(this).serialize());
     $(this).find("[name='name']").val("");
@@ -206,6 +215,8 @@ isInQueue = function(usr) {
     }
     return false;
 }
+
+
 
 // The ready function, do bindings/manipulation here
 $(document).ready(function() {
