@@ -22,7 +22,7 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 <script src="../js/bootstrap.min.js"></script>
 <script type="text/javascript" src="/_ah/channel/jsapi"></script>
-<script type="text/javascript" src="/js/labtas-4.1.js"></script>
+<script type="text/javascript" src="/js/labtas-5.js"></script>
 
 <div class="container">
     <div class="row">
@@ -105,6 +105,8 @@
                 <label for="course" class="col-lg-2 control-label">Course</label>
                 <div class="col-lg-6">
                     <select class="form-control" name="course">
+                    <select class="form-control" name="course" id="select-course">
+                        <option></option>
                         <option>ISC (Integrated Science)</option>
                         <option>COS 109</option>
                         <option>COS 126</option>
@@ -117,7 +119,8 @@
             <div class ="form-group">
                 <label for="location" class="col-lg-2 control-label">Location</label>
                 <div class="col-lg-6">
-                    <select class="form-control" name="location">
+                    <select class="form-control" name="location" id="select-location">
+                        <option></option>
                         {% for loc in queues %}
                             <option>{{loc.name}}</option>
                         {% endfor %}
