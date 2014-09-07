@@ -4,37 +4,11 @@ import webapp2
 from google.appengine.api import channel, users, memcache
 from google.appengine.ext import ndb
 from HelpRequest import HelpRequest, help_queue_key
-from LabTA import LabTA, labta_key, is_ta, update_active_tas, get_active_tas
-import json, string
+from LabTA import LabTA, labta_key, is_ta, update_active_tas
+import json
 import ChannelManager
 
-
-def stripString(stringy):
-    stringy = stringy.replace('<','&lt;').replace('>', '&gt;')
-    whitelist = ".!@,-=:+;&$#()_?/~'\"\\" + string.ascii_letters + string.whitespace + string.digits
-    stripped = [c for c in stringy if c in whitelist]
-    return ''.join(stripped)
-
-def get_locations():
-    friend = {'name': 'Friend Center', 'id': 'FriendCenter'}
-    frist = {'name': 'Frist Center', 'id': 'FristCenter'}
-    return [friend, frist]
-
-# Returns a list of locations with attached queues.
-def get_queues():
-    q = get_whole_queue()
-    locations = get_locations()
-    for loc in locations:
-      loc['queue'] = [entry for entry in q if entry['location'] == loc['name']]
-      loc['num_tas'] = get_active_tas(loc['name'])
-      print loc['name'], loc['num_tas']
-    return locations
-
-def get_json_queues():
-    qs = get_queues()
-    return json.dumps(qs)
-
-def get_whole_queue():
+def get_json_queue():
     q = HelpRequest.query(ancestor=help_queue_key())
     q = q.filter(HelpRequest.been_helped == False)
     q = q.filter(HelpRequest.canceled == False)
@@ -43,13 +17,12 @@ def get_whole_queue():
     queue = []
     for e in q:
         tmp = {}
-        tmp['name'] = stripString(e.name)
-        tmp['email'] = stripString(e.netid)
-        tmp['help_msg'] = stripString(e.help_msg)
-        tmp['course'] = stripString(e.course)
-        tmp['location'] = stripString(e.location)
+        tmp['name'] = e.name
+        tmp['email'] = e.netid
+        tmp['help_msg'] = e.help_msg
+        tmp['course'] = e.course
         queue.append(tmp)
-    return queue
+    return json.dumps(queue)
 
 class GetQueue(webapp2.RequestHandler):
     # returns the current queue as a JSON object
@@ -57,12 +30,11 @@ class GetQueue(webapp2.RequestHandler):
     # assume the channel was already created
     def get(self):
         user = users.get_current_user()
-        json_queue = get_json_queues()
+        json_queue = get_json_queue()
         channel.send_message(user.email(), json_queue)
 
 class AddToQueue(webapp2.RequestHandler):
     def post(self):
-        print 'In QueueManager.AddToQueue'
         user = users.get_current_user()
         q = HelpRequest.query(HelpRequest.in_queue == True,
                               HelpRequest.netid == user.email(),
@@ -72,10 +44,9 @@ class AddToQueue(webapp2.RequestHandler):
             return
         hr = HelpRequest(parent=help_queue_key())
         hr.netid = user.email()
-        hr.name = stripString(self.request.get('name'))
-        hr.help_msg = stripString(self.request.get('help_msg'))
+        hr.name = self.request.get('name')
+        hr.help_msg = self.request.get('help_msg')
         hr.course = self.request.get('course')
-        hr.location = self.request.get('location')
         hr.put()
         ChannelManager.queue_update()
 
@@ -88,12 +59,12 @@ class MarkAsHelped(webapp2.RequestHandler):
         if q.count() != 1:
             logging.error("Database corrupted for user {}".format(user.email()))
             return
+        update_active_tas(user.email())
         hr = q.get()
         hr.been_helped = True
         hr.helped_datetime = datetime.utcnow()
         hr.attending_ta = user.email()
         hr.put()
-        update_active_tas(user.email(), hr.location)
         ChannelManager.queue_update()
         ta = LabTA.query(LabTA.email == hr.attending_ta, ancestor=labta_key()).fetch()[0]
         ChannelManager.notify_request_accepted(hr.netid, ta.first_name, ta.img_path)
@@ -107,14 +78,11 @@ class CancelFromQueue(webapp2.RequestHandler):
         if q.count() != 1:
             logging.error("Database corrupted for user {}".format(user.email()))
             return
-
+        if is_ta(user.email()):
+            update_active_tas(user.email())
         hr = q.get()
         hr.canceled = True
         hr.put()
-
-        if is_ta(user.email()):
-            update_active_tas(user.email(), hr.location)
-
         ChannelManager.queue_update()
 
 # Currently this is pretty insecure, theoretically any user could just

@@ -40,10 +40,10 @@ class SubscriberDisconnect(webapp2.RequestHandler):
         remove_sub(self.request.get('from'))
 
 def queue_update():
-    queues = QueueManager.get_json_queues()
+    json_queue = QueueManager.get_json_queue()
     logging.info("sending notifications")
     subs = memcache.get(SUBSCRIBERS_KEY)
-    msg = json.dumps({'type': 'queue', 'data': queues})
+    msg = json.dumps({'type': 'queue', 'data': json_queue, 'active_tas': LabTA.update_active_tas()})
     for s in subs:
         channel.send_message(s, msg)
 
