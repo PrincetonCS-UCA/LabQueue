@@ -23,6 +23,7 @@ class MainPage(webapp2.RequestHandler):
         if is_ta(user.email()):
             logging.info("{} is a TA".format(user.email()))
         template_values = {'logout_url': users.create_logout_url('/'),
+                           'schedule_url': "http://labta.cs.princeton.edu/schedule.html", 
                            'is_ta': is_ta(user.email()),
                            'curr_user': user.email(),
                            'token': token,
@@ -40,7 +41,6 @@ app = webapp2.WSGIApplication([
     ('/clear-queue', QueueManager.ClearQueue),
     ('/ack-modal', LabTA.AcknowledgeModal),
     ('/ta-facebook', LabTA.TAFacebook),
-    ('/schedule', LabTA.Schedule),
     ('/_ah/channel/connected/', ChannelManager.SubscriberConnect),
     ('/_ah/channel/disconnected/', ChannelManager.SubscriberDisconnect),
     ('/_update-tas', LabTAUtils.SetTAsInNDB)
