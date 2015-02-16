@@ -23,7 +23,7 @@ class MainPage(webapp2.RequestHandler):
         if is_ta(user.email()):
             logging.info("{} is a TA".format(user.email()))
         template_values = {'logout_url': users.create_logout_url('/'),
-                           'schedule_url': "http://labta.cs.princeton.edu/schedule.html", 
+                           'schedule_url': "http://labta.cs.princeton.edu", 
                            'is_ta': is_ta(user.email()),
                            'curr_user': user.email(),
                            'token': token,
