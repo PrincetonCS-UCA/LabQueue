@@ -49,7 +49,12 @@ refreshQueue = function() {
     var button_template = $("#queue-btn-template");
     for (var i = 0; i < queue.length; i++) {
         var new_row = header.clone();
-        new_row.children(".hr-number").html(i + 1)
+	
+	/* NOTE: If you want to add a new type of column, make sure
+           to also update the header in the template (since a new row
+           is created by cloning the header row. */
+
+	new_row.children(".hr-number").html(i + 1)
         new_row.children(".hr-name").html(queue[i].name);
         new_row.children(".hr-email").html(queue[i].email);
         if (is_ta || queue[i].email == curr_user)
@@ -62,6 +67,7 @@ refreshQueue = function() {
             new_row.children(".hr-course").html(queue[i].course);
             new_row.children(".hr-msg").html(queue[i].help_msg);
         }
+	new_row.children(".hr-id").html(queue[i].full_id);
         table.append(new_row);
     }
     update_wait();
@@ -98,18 +104,28 @@ update_wait = function () {
         $("#wait_time").text("> 45 minutes").removeClass().addClass("label label-danger");
 }
 
+getRowParams = function(e, btn) {
+    
+    // server picks up user name (so no need to pass it)
+    var email = $(btn).parent().siblings(".hr-email").text();
+    var full_id = $(btn).parent().siblings(".hr-id").text() || "";
+    
+    return { email   : email,
+	     full_id : full_id };
+}
+
 closeRequest = function(e) {
     e.preventDefault();
-    var email = $(this).parent().siblings(".hr-email").text();
-    $.post("/mark-helped", {email: email}); // server picks up user name
+    var row_params = getRowParams(e, this);
+    $.post("/mark-helped", row_params);
     return false;
 }
 
 cancelRequest = function(e) {
     console.log("cancel");
     e.preventDefault();
-    var email = $(this).parent().siblings(".hr-email").text();
-    $.post("/cancel", {email: email}); // server picks up user name
+    var row_params = getRowParams(e, this);
+    $.post("/cancel", row_params);
     return false;
 }
 

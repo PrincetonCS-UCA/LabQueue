@@ -11,7 +11,9 @@ class HelpRequest(ndb.Model):
     help_msg = ndb.TextProperty()
     been_helped = ndb.BooleanProperty(default=False)
     canceled = ndb.BooleanProperty(default=False)
-    in_queue = ndb.ComputedProperty(lambda self: (not self.been_helped and not self.canceled))
+    in_queue = ndb.ComputedProperty(lambda self:
+                                    (not self.been_helped and
+                                     not self.canceled))
     request_datetime = ndb.DateTimeProperty(auto_now_add=True)
     attending_ta = ndb.StringProperty()
     helped_datetime = ndb.DateTimeProperty()
