@@ -1,4 +1,4 @@
-LabTAs
+LabQueue
 ======
 
-Website for the Princeton LabTAs
+Help queue website for the Princeton Lab TAs
