@@ -19,7 +19,9 @@
         <div class="col-md-4">
             <img src="{{ ta.img_path }}"> <br>
             {{ ta.first_name }} {{ ta.last_name }}<br>
+	    {% if 'princeton.edu' in ta.email %}
             <a href="mailto:{{ ta.email }}">{{ ta.email }}</a><br>
+	    {% endif %}
             {{ ta.class_year }}
         </div>
         {% if loop.last or loop.index % ROW_LENGTH == 0 %} <!-- end of a row -->
