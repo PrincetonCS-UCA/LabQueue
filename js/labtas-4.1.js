@@ -10,6 +10,19 @@ onOpen = function() {
     refreshQueue();
 }
 
+notify = function(m) {
+    document.title = m;
+
+    if (is_ta) {
+        var n = new Notification(m);
+        n.onclick = function () {
+            window.focus();
+            n.close();
+        };
+        setTimeout(n.close.bind(n), 5000);
+    }
+}
+
 onMessage = function(m) {
     console.log("incoming message");
     // this is a bit of a hack, but for now we'll ignore the
@@ -25,10 +38,12 @@ onMessage = function(m) {
         if (newQueue.length > queue.length && !pageActive)
         {
             newRequests += newQueue.length - queue.length;
-            if (newRequests == 1)
-                document.title = newRequests + " New Request!";
-            else
-                document.title = newRequests + " New Requests!";
+            if (newRequests == 1) {
+                notify(newRequests + " New Request!");
+            }
+            else {
+                notify(newRequests + " New Requests!");
+            }
         }
         queue = newQueue;
         refreshQueue();
